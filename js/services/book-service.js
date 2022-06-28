@@ -7,10 +7,13 @@ export const bookService = {
     remove,
     save,
     get,
-    getPrevNextBookId
+    getPrevNextBookId,
+    getBooksFromApi,
+    addBook
 };
 
 const BOOKS_KEY = 'booksDB';
+const BOOKS_SEARCH_KEY = 'booksSearchDB'
 
 if (!utilService.loadFromStorage(BOOKS_KEY)) utilService.saveToStorage(BOOKS_KEY, booksJson)
 
@@ -38,6 +41,53 @@ function getPrevNextBookId(bookId){
             })
 }
 
+function getBooksFromApi(val){
+    let searchCache = utilService.loadFromStorage(BOOKS_SEARCH_KEY) || {}
+    if(searchCache[val]){
+        console.log('from cache');
+        return Promise.resolve(searchCache[val])
+    }
+
+
+   return axios.get(`https://www.googleapis.com/books/v1/volumes?printType=books&q=${val}`)
+    .then((res)=>res.data.items)
+    .then((items)=>{
+        const books = _prepareData(items)
+        searchCache[val] = books
+        utilService.saveToStorage(BOOKS_SEARCH_KEY, searchCache)
+        return books
+    })
+}
+
+function _prepareData(items){
+    let books = items.map((book)=> _createBook(book))
+    return books
+}
+
+function _createBook(item){
+    return {
+        id:item.id,
+        title:item.volumeInfo.title,
+        subtitle:'subtitle',
+        authors:item.volumeInfo.authors,
+        categories:item.volumeInfo.categories,
+        pageCount:item.volumeInfo.pageCount,
+        thumbnail:item.volumeInfo.imageLinks['thumbnail'],
+        publishedDate:item.volumeInfo.publishedDate,
+        language:item.volumeInfo.language,
+        description:item.volumeInfo.title,
+        listPrice:{
+            amount:50,
+            currencyCode:"EUR",
+            isOnSale:false,
+        }
+
+    }
+}
+
+function addBook(book){
+   return storageService.post(BOOKS_KEY,book)
+}
 
 
 

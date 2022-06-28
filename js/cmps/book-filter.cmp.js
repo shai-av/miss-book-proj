@@ -1,7 +1,8 @@
 export default {
   template: `
  <section class="book-filter">
-    <input type="text" v-model="filterBy.name" @input="filter"/>
+  <h3>filter</h3>
+    <input type="text" v-model="filterBy.name" @input="filter" placeholder="Book name"/>
     <input type="range" min="0" max="200"
        :title=getRangeTitle v-model="filterBy.maxPrice"  @change="filter"/>
  </section>

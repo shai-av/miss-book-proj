@@ -1,13 +1,14 @@
 import { bookService } from "../services/book-service.js"
 import bookFilter from '../cmps/book-filter.cmp.js'
 import bookList from '../cmps/book-list.cmp.js'
-
+import bookAdd from "../cmps/book-add.cmp.js";
 
 
 export default {
     template: `
     <section v-if="books" class="book-app main-layout app-main">
         <book-filter @filtered="setFilter"></book-filter>
+        <book-add @returnBook="addToDisplay"/>
         <book-list :books="booksToShow"></book-list>
     </section>
     `,
@@ -15,6 +16,7 @@ export default {
         bookService,
         bookFilter,
         bookList,
+        bookAdd
     },
     data() {
         return {
@@ -32,6 +34,9 @@ export default {
         },
         removeBook(bookId){
             bookService.remove(bookId).then(()=>console.log('deleted'))
+        },
+        addToDisplay(book){
+            this.books.unshift(book)
         }
         
     },
