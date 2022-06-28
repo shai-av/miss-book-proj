@@ -36,7 +36,8 @@ export default {
             bookService.remove(bookId).then(()=>console.log('deleted'))
         },
         addToDisplay(book){
-            this.books.unshift(book)
+            bookService.query().then((books)=>this.books = books)
+            // this.books.unshift(book)
         }
         
     },

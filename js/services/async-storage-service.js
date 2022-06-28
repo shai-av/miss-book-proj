@@ -21,7 +21,10 @@ function post(entityType, newEntity) {
     newEntity.id = _makeId()
     return query(entityType)
         .then(entities => {
+            //////////////////////////////////////
+            // if(!entities.find((book)=>book.title === newEntity.title))  
             entities.push(newEntity);
+            /////////////////////////////////////
             _save(entityType, entities)
             return newEntity;
         })
